@@ -410,6 +410,7 @@ class ConversationalDM2(pl.LightningDataModule):
         parser.add_argument("--pin_memory", default=True, type=bool)
         parser.add_argument("--load_from_cache_file", default=True, type=bool)
         parser.add_argument("--num_proc", default=n_cpus, type=int)
+        parser.add_argument("--tensorpath", default='/ocean/projects/cis220078p/stomita/project/dataset_tensor/', type=str)
         return parser
 
 
