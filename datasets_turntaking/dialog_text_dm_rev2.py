@@ -21,6 +21,11 @@ import ffmpeg
 import logging
 
 
+### ------- Get Feature
+from get_feature import *
+
+
+
 
 CACHE_PATH = join(expanduser("~"), ".cache/datasets_turntaking/conversational")
 class ConversationalDM2(pl.LightningDataModule):
@@ -62,6 +67,10 @@ class ConversationalDM2(pl.LightningDataModule):
         self.tensor_path = tensorpath
         self.videodir_path = videodirpath
         self.overwrite = overwrite
+
+        # Get Features
+        self.get_feature = Get_Feature()
+        
 
     def get_split_path(self, split):
         pass
@@ -317,7 +326,21 @@ class ConversationalDM2(pl.LightningDataModule):
         input_closeup2 = [torch.tensor(b['closeup2']) for b in batch_dict] # list of tensor(1024 * H * W * 3)
         input_closeup3 = [torch.tensor(b['closeup3']) for b in batch_dict] # list of tensor(1024 * H * W * 3)
         input_closeup4 = [torch.tensor(b['closeup4']) for b in batch_dict] # list of tensor(1024 * H * W * 3)
-        input_corner = [torch.tensor(b['corner']) for b in batch_dict]
+        
+        # no need to convert to tensor for conrner, keep as np.array
+        input_corner = [b['corner'] for b in batch_dict] 
+
+        #           --------------------------------------------------------    Get  Feature    -----------------------------------------------------
+        ### get features from closeup, shape = batch_size x 1024 x 1x 6
+        feature_closeup1 = self.get_feature.get_closeup_feature(input_closeup1)
+        feature_closeup2 = self.get_feature.get_closeup_feature(input_closeup2)
+        feature_closeup3 = self.get_feature.get_closeup_feature(input_closeup3)
+        feature_closeup4 = self.get_feature.get_closeup_feature(input_closeup4)
+
+        ### get features from corner, shape = batch_size x 1024 x 6336
+        feature_corner = self.get_feature.get_corner_feature(input_corner)
+
+        #           -------------------------------------------------------------------------------------------------------------
 
         # before padding everything, create original attention_mask without padding
         attention_mask_list = [torch.ones_like(word) for word in input_word]
@@ -333,11 +356,11 @@ class ConversationalDM2(pl.LightningDataModule):
 
         # pad_sequence to input_word
         input_word_pad = pad_sequence(input_word, batch_first = True, padding_value=self.tokenizer.tokenizer.pad_token_id)
-        input_closeup1_pad = pad_sequence(input_closeup1, batch_first = True, padding_value=0)
-        input_closeup2_pad = pad_sequence(input_closeup2, batch_first = True, padding_value=0)
-        input_closeup3_pad = pad_sequence(input_closeup3, batch_first = True, padding_value=0)
-        input_closeup4_pad = pad_sequence(input_closeup4, batch_first = True, padding_value=0)
-        input_corner_pad = pad_sequence(input_corner, batch_first = True, padding_value=0)
+        feature_closeup1_pad = pad_sequence(feature_closeup1, batch_first = True, padding_value=0)
+        feature_closeup2_pad = pad_sequence(feature_closeup2, batch_first = True, padding_value=0)
+        feature_closeup3_pad = pad_sequence(feature_closeup3, batch_first = True, padding_value=0)
+        feature_closeup4_pad = pad_sequence(feature_closeup4, batch_first = True, padding_value=0)
+        feature_corner_pad = pad_sequence(feature_corner, batch_first = True, padding_value=0)
         
 
         # since padding_mode = 'replicate' didn't work, let's do it manually...
@@ -353,12 +376,12 @@ class ConversationalDM2(pl.LightningDataModule):
           attention_mask_element = torch.nn.functional.pad(attention_mask_list[i], (0, self.max_length-len(attention_mask_list[i])), 'constant', 0)
           attention_mask[i] = attention_mask_element
         
-        del input_word, input_speaker, input_closeup1, input_closeup2, input_closeup3, input_closeup4, input_corner
+        del input_word, input_speaker, input_closeup1, input_closeup2, input_closeup3, input_closeup4, input_corner, feature_closeup1, feature_closeup2, feature_closeup3, feature_closeup4, feature_corner
         gc.collect()
         
         return {'input_ids': input_word_pad, 'speaker_ids': input_speaker_pad, 'attention_mask': attention_mask,
-                'closeup1': input_closeup1_pad, 'closeup2': input_closeup2_pad, 'closeup3': input_closeup3_pad, 'closeup4': input_closeup4_pad,
-                'corner': input_corner_pad}
+                'closeup1': feature_closeup1_pad, 'closeup2': feature_closeup2_pad, 'closeup3': feature_closeup3_pad, 'closeup4': feature_closeup4_pad,
+                'corner': feature_corner_pad}
     
     def train_dataloader(self):
         return DataLoader(
