@@ -5,3 +5,7 @@ pytorch-lightning
 torchaudio
 # librosa
 # AMFM-decompy
+
+huggingface_hub
+pyyaml==5.1
+ detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu113/torch1.10/index.html
