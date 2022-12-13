@@ -334,10 +334,21 @@ class ConversationalDM2(pl.LightningDataModule):
         feature_closeup2 = self.get_feature.get_closeup_feature(input_closeup2)
         feature_closeup3 = self.get_feature.get_closeup_feature(input_closeup3)
         feature_closeup4 = self.get_feature.get_closeup_feature(input_closeup4)
-
+        
         ### get features from corner, shape = batch_size x 1024 x 6336
         feature_corner = self.get_feature.get_corner_feature(input_corner)
-
+        
+        debug = True
+        if debug:
+            print('features:')
+            print(feature_closeup1.shape)
+            print(feature_closeup1.shape)
+            print(feature_closeup1.shape)
+            print(feature_closeup1.shape)
+            print('corner:')
+            print(feature_corner.shape)
+            
+        
         #           -------------------------------------------------------------------------------------------------------------
 
         # before padding everything, create original attention_mask without padding
