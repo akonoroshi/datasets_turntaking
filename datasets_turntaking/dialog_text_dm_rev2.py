@@ -762,7 +762,7 @@ class ConversationalDM2(pl.LightningDataModule):
         input_corner = [b['corner'] for b in batch_dict] 
 
         #           --------------------------------------------------------    Get  Feature    -----------------------------------------------------
-        ### get features from closeup, shape = batch_size x 1024 x 1x 6
+        ### get features from closeup, shape = batch_size x 1024 x 6
         feature_closeup1 = self.get_feature.get_closeup_feature(input_closeup1)
         feature_closeup2 = self.get_feature.get_closeup_feature(input_closeup2)
         feature_closeup3 = self.get_feature.get_closeup_feature(input_closeup3)
