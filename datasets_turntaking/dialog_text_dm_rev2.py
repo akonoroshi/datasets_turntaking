@@ -21,11 +21,6 @@ import ffmpeg
 import logging
 
 
-# ### ------- Get Feature
-# from get_feature import *
-
-# ---> 
-
 import matplotlib.pyplot as plt
 import numpy as np
 # from google.colab.patches import cv2_imshow
@@ -761,12 +756,33 @@ class ConversationalDM2(pl.LightningDataModule):
         # no need to convert to tensor for conrner, keep as np.array
         input_corner = [b['corner'] for b in batch_dict] 
 
+
+        # before padding everything, create original attention_mask without padding
+        attention_mask_list = [torch.ones_like(word) for word in input_word]
+        
+        # in case all tensor in the batch is shorter than 1024, padding the first entity 
+        if len(input_word[0]) != self.max_length:
+            input_word[0] = torch.nn.functional.pad(input_word[0], (0, self.max_length-len(input_word[0])), 'constant', self.tokenizer.tokenizer.pad_token_id)
+            input_closeup1[0] = torch.nn.functional.pad(input_closeup1[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
+            input_closeup2[0] = torch.nn.functional.pad(input_closeup2[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
+            input_closeup3[0] = torch.nn.functional.pad(input_closeup3[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
+            input_closeup4[0] = torch.nn.functional.pad(input_closeup4[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
+            input_corner[0] = torch.nn.functional.pad(input_corner[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
+
+        # pad_sequence to input_word
+        input_word_pad = pad_sequence(input_word, batch_first = True, padding_value=self.tokenizer.tokenizer.pad_token_id)
+        input_closeup1_pad = pad_sequence(input_closeup1, batch_first = True, padding_value=0)
+        input_closeup2_pad = pad_sequence(input_closeup2, batch_first = True, padding_value=0)
+        input_closeup3_pad = pad_sequence(input_closeup3, batch_first = True, padding_value=0)
+        input_closeup4_pad = pad_sequence(input_closeup4, batch_first = True, padding_value=0)
+        input_corner_pad = pad_sequence(input_corner, batch_first = True, padding_value=0)
+        
         #           --------------------------------------------------------    Get  Feature    -----------------------------------------------------
         ### get features from closeup, shape = batch_size x 1024 x 6
-        feature_closeup1 = self.get_feature.get_closeup_feature(input_closeup1)
-        feature_closeup2 = self.get_feature.get_closeup_feature(input_closeup2)
-        feature_closeup3 = self.get_feature.get_closeup_feature(input_closeup3)
-        feature_closeup4 = self.get_feature.get_closeup_feature(input_closeup4)
+        feature_closeup1 = self.get_feature.get_closeup_feature(input_closeup1_pad)
+        feature_closeup2 = self.get_feature.get_closeup_feature(input_closeup2_pad)
+        feature_closeup3 = self.get_feature.get_closeup_feature(input_closeup3_pad)
+        feature_closeup4 = self.get_feature.get_closeup_feature(input_closeup4_pad)
         
         ### get features from corner, shape = batch_size x 1024 x 6336
         feature_corner = self.get_feature.get_corner_feature(input_corner)
@@ -784,26 +800,6 @@ class ConversationalDM2(pl.LightningDataModule):
         
         #           -------------------------------------------------------------------------------------------------------------
 
-        # before padding everything, create original attention_mask without padding
-        attention_mask_list = [torch.ones_like(word) for word in input_word]
-        
-        # in case all tensor in the batch is shorter than 1024, padding the first entity 
-        if len(input_word[0]) != self.max_length:
-            input_word[0] = torch.nn.functional.pad(input_word[0], (0, self.max_length-len(input_word[0])), 'constant', self.tokenizer.tokenizer.pad_token_id)
-            input_closeup1[0] = torch.nn.functional.pad(input_closeup1[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
-            input_closeup2[0] = torch.nn.functional.pad(input_closeup2[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
-            input_closeup3[0] = torch.nn.functional.pad(input_closeup3[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
-            input_closeup4[0] = torch.nn.functional.pad(input_closeup4[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
-            input_corner[0] = torch.nn.functional.pad(input_corner[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
-
-        # pad_sequence to input_word
-        input_word_pad = pad_sequence(input_word, batch_first = True, padding_value=self.tokenizer.tokenizer.pad_token_id)
-        feature_closeup1_pad = pad_sequence(feature_closeup1, batch_first = True, padding_value=0)
-        feature_closeup2_pad = pad_sequence(feature_closeup2, batch_first = True, padding_value=0)
-        feature_closeup3_pad = pad_sequence(feature_closeup3, batch_first = True, padding_value=0)
-        feature_closeup4_pad = pad_sequence(feature_closeup4, batch_first = True, padding_value=0)
-        feature_corner_pad = pad_sequence(feature_corner, batch_first = True, padding_value=0)
-        
 
         # since padding_mode = 'replicate' didn't work, let's do it manually...
         # create a tensor to store the result
@@ -822,8 +818,8 @@ class ConversationalDM2(pl.LightningDataModule):
         gc.collect()
         
         return {'input_ids': input_word_pad, 'speaker_ids': input_speaker_pad, 'attention_mask': attention_mask,
-                'closeup1': feature_closeup1_pad, 'closeup2': feature_closeup2_pad, 'closeup3': feature_closeup3_pad, 'closeup4': feature_closeup4_pad,
-                'corner': feature_corner_pad}
+                'closeup1': feature_closeup1, 'closeup2': feature_closeup2, 'closeup3': feature_closeup3, 'closeup4': feature_closeup4,
+                'corner': feature_corner}
     
     def train_dataloader(self):
         return DataLoader(
