@@ -780,14 +780,16 @@ class ConversationalDM2(pl.LightningDataModule):
         input_corner_pad = pad_sequence(input_corner, batch_first = True, padding_value=0)
         
         #           --------------------------------------------------------    Get  Feature    -----------------------------------------------------
+        ### get features from corner, shape = batch_size x 1024 x 6336
+        feature_corner = self.get_feature.get_corner_feature(input_corner)        
+        
         ### get features from closeup, shape = batch_size x 1024 x 6
         feature_closeup1 = self.get_feature.get_closeup_feature(input_closeup1_pad)
         feature_closeup2 = self.get_feature.get_closeup_feature(input_closeup2_pad)
         feature_closeup3 = self.get_feature.get_closeup_feature(input_closeup3_pad)
         feature_closeup4 = self.get_feature.get_closeup_feature(input_closeup4_pad)
         
-        ### get features from corner, shape = batch_size x 1024 x 6336
-        feature_corner = self.get_feature.get_corner_feature(input_corner)
+
         
         debug = True
         if debug:
