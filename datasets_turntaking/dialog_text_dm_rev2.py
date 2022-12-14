@@ -781,7 +781,7 @@ class ConversationalDM2(pl.LightningDataModule):
         
         #           --------------------------------------------------------    Get  Feature    -----------------------------------------------------
         ### get features from corner, shape = batch_size x 1024 x 6336
-        feature_corner = self.get_feature.get_corner_feature(input_corner)        
+        feature_corner = self.get_feature.get_corner_feature(input_corner_pad)        
         
         ### get features from closeup, shape = batch_size x 1024 x 6
         feature_closeup1 = self.get_feature.get_closeup_feature(input_closeup1_pad)
