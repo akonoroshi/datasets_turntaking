@@ -753,9 +753,7 @@ class ConversationalDM2(pl.LightningDataModule):
         input_closeup2 = [torch.tensor(b['closeup2']) for b in batch_dict] # list of tensor(1024 * H * W * 3)
         input_closeup3 = [torch.tensor(b['closeup3']) for b in batch_dict] # list of tensor(1024 * H * W * 3)
         input_closeup4 = [torch.tensor(b['closeup4']) for b in batch_dict] # list of tensor(1024 * H * W * 3)
-        
-        # no need to convert to tensor for conrner, keep as np.array
-        input_corner = [b['corner'] for b in batch_dict] 
+        input_corner = [torch.tensor(b['corner']) for b in batch_dict] # list of tensor(1024 * H * W * 3)
 
 
         # before padding everything, create original attention_mask without padding
