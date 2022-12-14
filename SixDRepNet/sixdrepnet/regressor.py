@@ -110,9 +110,9 @@ class SixDRepNet_Detector():
 
         image = image.type(torch.FloatTensor).to('cpu')
         image = image.permute(0,1,4,2,3)
-        print(image.shape)
+        # print(image.shape)
         num_batches, data_len, channel, height, width  = image.shape
-        print(image.dim())
+        # print(image.dim())
         batch_s = 1
        
 
@@ -163,10 +163,10 @@ class SixDRepNet_Detector():
             another_lst = []
 
             while i < data_len: 
-                print('now here', i)
+                # print('closeup images', i)
                 mini_batch_images = b[i:i+batch_s_s]
                 mini_batch_images = mini_batch_images.to(device)
-                print('b',i , mini_batch_images.shape)
+                print('closeups',i , mini_batch_images.shape)
                 
                 # below are the line causing CUDA OOM line -->
                 x = self.model(mini_batch_images) # added x as output 
