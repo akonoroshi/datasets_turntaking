@@ -317,7 +317,8 @@ class Get_Feature(nn.Module):
             image: numpy array of images
             return_pooled_only: if true return only pooled tensor
         '''
-
+        image = image.numpy() # convert torch tensor to numpy array
+       
         print(image.shape)
         num_batches, data_len, height, width, channel = image.shape
         
@@ -418,12 +419,12 @@ class Get_Feature(nn.Module):
     def get_closeup_feature(self, images, final_shape = (200,200)):
         '''
         function to get closeup feature
-            images: list of  torch.tensor (1024 x H x W x 3)
+            images: torch.tensor after pad_sequence (batch_size x 1024 x H x W x 3)
             final shape: image crop size (H x W)
         returns:
             feature tensor: torch.tensor shape of (batch_size x 1024 x 1 x 6)
         '''
-        images = torch.stack(images)
+        # images = torch.stack(images) # we do not need to stack agin 
         
         # gete face frop
         
@@ -438,13 +439,13 @@ class Get_Feature(nn.Module):
     def get_corner_feature(self, images): 
         '''
         function to get corner feature
-            images: list of numpy array (torch.tensor does not work in one of the detectron code)
+            images: torch.tensor after pad_sequence (batch_size x 1024 x H x W x 3)
         returns:
             featur tensor: torch.tensor shape of (batch_size x 1024 x 6336)
         '''
-        images = np.stack(images)
+        # images = np.stack(images)
 
-        feature_tensor = self.corner_batchver(images)  # input must be numpy array
+        feature_tensor = self.corner_batchver(images)  
         del images
         return feature_tensor
 
