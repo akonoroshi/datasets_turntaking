@@ -333,7 +333,7 @@ class Get_Feature(nn.Module):
             images_per_batch = []
 
             for i in range(data_len):
-                image_array = image_numpys[b][i]
+                image_array = image_numpys[b][i].copy()
                 in_img = self.predictor.aug.get_transform(image_array).apply_image(image_array)
                 images_per_batch.append({'image':torch.from_numpy(np.transpose(in_img, (2, 0, 1))), 'height': height, 'width': width})
                 # images_per_batch.append({'image':in_img.permute(2, 0, 1), 'height': height, 'width': width})
