@@ -314,10 +314,13 @@ class Get_Feature(nn.Module):
         '''
         function to get corner feature
             
-            image: numpy array of images
+            image: torch tensor (batch_size x 1024)
             return_pooled_only: if true return only pooled tensor
         '''
-        image = image.numpy() # convert torch tensor to numpy array
+       numpy_image_list = []
+       for i in range(len(image)):
+           im = image[i].numpy() # convert torch tensor to numpy array
+           numpy_image_list.append(im)
        
         print(image.shape)
         num_batches, data_len, height, width, channel = image.shape
@@ -330,7 +333,7 @@ class Get_Feature(nn.Module):
             images_per_batch = []
 
             for i in range(data_len):
-                in_img = self.predictor.aug.get_transform(image[b][i]).apply_image(image[b][i])
+                in_img = self.predictor.aug.get_transform(numpy_image_list[b][i]).apply_image(numpy_image_list[b][i])
                 images_per_batch.append({'image':torch.from_numpy(np.transpose(in_img, (2, 0, 1))), 'height': height, 'width': width})
                 # images_per_batch.append({'image':in_img.permute(2, 0, 1), 'height': height, 'width': width})
                 
