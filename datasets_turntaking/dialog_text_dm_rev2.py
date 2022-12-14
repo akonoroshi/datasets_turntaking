@@ -793,12 +793,12 @@ class ConversationalDM2(pl.LightningDataModule):
         
         debug = True
         if debug:
-            print('features:')
+            print('Finished getting features. \ncloseup features:')
             print(feature_closeup1.shape)
-            print(feature_closeup1.shape)
-            print(feature_closeup1.shape)
-            print(feature_closeup1.shape)
-            print('corner:')
+            print(feature_closeup2.shape)
+            print(feature_closeup3.shape)
+            print(feature_closeup4.shape)
+            print('corner features:')
             print(feature_corner.shape)
             
         #           -------------------------------------------------------------------------------------------------------------
@@ -817,7 +817,7 @@ class ConversationalDM2(pl.LightningDataModule):
           attention_mask_element = torch.nn.functional.pad(attention_mask_list[i], (0, self.max_length-len(attention_mask_list[i])), 'constant', 0)
           attention_mask[i] = attention_mask_element
         
-        del input_word, input_speaker, input_closeup1, input_closeup2, input_closeup3, input_closeup4, input_corner, feature_closeup1, feature_closeup2, feature_closeup3, feature_closeup4, feature_corner
+        del input_word, input_speaker, input_closeup1, input_closeup2, input_closeup3, input_closeup4, input_corner
         gc.collect()
         
         return {'input_ids': input_word_pad, 'speaker_ids': input_speaker_pad, 'attention_mask': attention_mask,
