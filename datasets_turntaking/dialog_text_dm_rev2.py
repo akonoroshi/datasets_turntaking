@@ -365,8 +365,9 @@ class Get_Feature(nn.Module):
                     #print(i)
                     #print(np.array(images_input[i:i+batch_s]).shape)
                     images = self.predictor.model.preprocess_image(images_input[i:i+batch_s])
+                    
                     updated_images_list.append(images_input[i:i+batch_s])
-                    features = self.predictor.model.backbone(images.tensor)
+                    features = self.predictor.model.backbone(torch.from_numpy(images).type(torch.FloatTensor)) 
                     proposals, _ = self.predictor.model.proposal_generator(images, features)
                     detector_results, _ = self.predictor.model.roi_heads(images, features, proposals)
                     detector_results = GeneralizedRCNN._postprocess(detector_results, images_input[i:i+batch_s], images.image_sizes)
