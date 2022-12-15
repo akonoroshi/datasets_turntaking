@@ -782,27 +782,28 @@ class ConversationalDM2(pl.LightningDataModule):
         input_closeup4_pad = pad_sequence(input_closeup4, batch_first = True, padding_value=0)
         input_corner_pad = pad_sequence(input_corner, batch_first = True, padding_value=0)
         
-        #           --------------------------------------------------------    Get  Feature    -----------------------------------------------------
-        ### get features from corner, shape = batch_size x 1024 x 6336
-        feature_corner = self.get_feature.get_corner_feature(input_corner_pad)        
+#         #           --------------------------------------------------------    Get  Feature    -----------------------------------------------------
+#         ### get features from corner, shape = batch_size x 1024 x 6336
+#         feature_corner = self.get_feature.get_corner_feature(input_corner_pad)        
         
-        ### get features from closeup, shape = batch_size x 1024 x 6
-        feature_closeup1 = self.get_feature.get_closeup_feature(input_closeup1_pad)
-        feature_closeup2 = self.get_feature.get_closeup_feature(input_closeup2_pad)
-        feature_closeup3 = self.get_feature.get_closeup_feature(input_closeup3_pad)
-        feature_closeup4 = self.get_feature.get_closeup_feature(input_closeup4_pad)
+#         ### get features from closeup, shape = batch_size x 1024 x 6
+#         feature_closeup1 = self.get_feature.get_closeup_feature(input_closeup1_pad)
+#         feature_closeup2 = self.get_feature.get_closeup_feature(input_closeup2_pad)
+#         feature_closeup3 = self.get_feature.get_closeup_feature(input_closeup3_pad)
+#         feature_closeup4 = self.get_feature.get_closeup_feature(input_closeup4_pad)
+        
+#         # ------------------------------------------------
         
         debug = True
         if debug:
-            print('Finished getting features. \ncloseup features:')
-            print(feature_closeup1.shape)
-            print(feature_closeup2.shape)
-            print(feature_closeup3.shape)
-            print(feature_closeup4.shape)
+            print('closeup features:')
+            print(input_closeup1_pad.shape)
+            print(input_closeup2_pad.shape)
+            print(input_closeup3_pad.shape)
+            print(input_closeup4_pad.shape)
             print('corner features:')
-            print(feature_corner.shape)
+            print(input_corner_pad.shape)
             
-        #           -------------------------------------------------------------------------------------------------------------
 
 
         # since padding_mode = 'replicate' didn't work, let's do it manually...
@@ -822,8 +823,8 @@ class ConversationalDM2(pl.LightningDataModule):
         gc.collect()
         
         return {'input_ids': input_word_pad, 'speaker_ids': input_speaker_pad, 'attention_mask': attention_mask,
-                'closeup1': feature_closeup1, 'closeup2': feature_closeup2, 'closeup3': feature_closeup3, 'closeup4': feature_closeup4,
-                'corner': feature_corner}
+                'closeup1': input_closeup1_pad, 'closeup2': input_closeup2_pad, 'closeup3': input_closeup3_pad, 'closeup4': input_closeup4_pad,
+                'corner': input_corner_pad}
     
     def train_dataloader(self):
         return DataLoader(
