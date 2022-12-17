@@ -774,6 +774,13 @@ class ConversationalDM2(pl.LightningDataModule):
             input_closeup4[0] = torch.nn.functional.pad(input_closeup4[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
             input_corner[0] = torch.nn.functional.pad(input_corner[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
 
+        # debug
+        debug = True
+        if  dedug == True:
+            print('debug:') 
+            for i in input_closeup1:
+                print(i.shape)
+        
         # pad_sequence to input_word
         input_word_pad = pad_sequence(input_word, batch_first = True, padding_value=self.tokenizer.tokenizer.pad_token_id)
         input_closeup1_pad = pad_sequence(input_closeup1, batch_first = True, padding_value=0)
