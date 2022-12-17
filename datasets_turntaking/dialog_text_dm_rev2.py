@@ -769,11 +769,11 @@ class ConversationalDM2(pl.LightningDataModule):
         # in case all tensor in the batch is shorter than 1024, padding the first entity 
         if len(input_word[0]) != self.max_length:
             input_word[0] = torch.nn.functional.pad(input_word[0], (0, self.max_length-len(input_word[0])), 'constant', self.tokenizer.tokenizer.pad_token_id)
-            input_closeup1[0] = torch.nn.functional.pad(input_closeup1[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
-            input_closeup2[0] = torch.nn.functional.pad(input_closeup2[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
-            input_closeup3[0] = torch.nn.functional.pad(input_closeup3[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
-            input_closeup4[0] = torch.nn.functional.pad(input_closeup4[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
-            input_corner[0] = torch.nn.functional.pad(input_corner[0].permute([1,2,3,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([3,0,1,2])
+            input_closeup1[0] = torch.nn.functional.pad(input_closeup1[0].permute([1,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([1,0])
+            input_closeup2[0] = torch.nn.functional.pad(input_closeup2[0].permute([1,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([1,0])
+            input_closeup3[0] = torch.nn.functional.pad(input_closeup3[0].permute([1,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([1,0])
+            input_closeup4[0] = torch.nn.functional.pad(input_closeup4[0].permute([1,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([1,0])
+            input_corner[0] = torch.nn.functional.pad(input_corner[0].permute([1,0]), (0, self.max_length-len(input_word[0])), 'constant', 0).permute([1,0])
 
         # debug
         debug = True
