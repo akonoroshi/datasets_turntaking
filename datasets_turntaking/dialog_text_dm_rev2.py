@@ -776,7 +776,7 @@ class ConversationalDM2(pl.LightningDataModule):
 
         # debug
         debug = True
-        if  dedug == True:
+        if  debug == True:
             print('debug:') 
             for i in input_closeup1:
                 print(i.shape)
