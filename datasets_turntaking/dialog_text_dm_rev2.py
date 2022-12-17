@@ -752,6 +752,7 @@ class ConversationalDM2(pl.LightningDataModule):
         # 'batch' will be iterable of path name
         # load data here
         batch_dict = [np.load(path) for path in batch]
+        path_dict = [path for path in batch]
         
         input_word = [torch.tensor(b["input_ids"]) for b in batch_dict] # list of tensor(1024)
         input_speaker = [torch.tensor(b["speaker_ids"]) for b in batch_dict] # list of tensor(1024)
@@ -778,8 +779,9 @@ class ConversationalDM2(pl.LightningDataModule):
         debug = True
         if debug:
             print('debug:') 
-            for i in input_closeup1:
-                print(i.shape)
+            for i in range(len(input_closeup1)):
+                print(path_dict[i])
+                print(input_closeup1[i].shape)
         
         # pad_sequence to input_word
         input_word_pad = pad_sequence(input_word, batch_first = True, padding_value=self.tokenizer.tokenizer.pad_token_id)
