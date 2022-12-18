@@ -818,10 +818,11 @@ class ConversationalDM2(pl.LightningDataModule):
         # since padding_mode = 'replicate' didn't work, let's do it manually...
         # create a tensor to store the result
         input_speaker_pad = torch.zeros_like(input_word_pad)
+        print('input_speaker', input_speaker_pad.shape)
         for i in range(len(input_speaker)):
           print(i)
           input_speaker_element = torch.nn.functional.pad(input_speaker[i], (0, self.max_length-len(input_speaker[i])), 'constant', input_speaker[i][-1].item())
-          print(input_speaker_element)
+          print(input_speaker_element.shape)
           input_speaker_pad[i] = input_speaker_element
 
         # create a tensor to store the result
